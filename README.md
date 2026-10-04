@@ -4,6 +4,11 @@ API REST para la gestión de deudas y recobro, construida con **Laravel 13**. Pe
 
 > Proyecto personal de aprendizaje, inspirado en el flujo de trabajo de una empresa de gestión de cobros.
 
+> **Estado del proyecto**: en desarrollo activo. Actualmente están implementados
+> la autenticación con Sanctum y el CRUD de deudores y deudas (con filtros,
+> paginación y control de roles). Los endpoints de gestiones y pagos, los tests
+> y el CI se están implementando. Última actualización: 2026-10-04.
+
 ## Stack
 
 - PHP 8.5 / Laravel 13
@@ -50,17 +55,23 @@ Usuarios de prueba creados por el seeder:
 
 Todos salvo el login requieren la cabecera `Authorization: Bearer <token>`.
 
-| Método | Ruta                          | Descripción                          | Rol          |
-|--------|-------------------------------|--------------------------------------|--------------|
-| POST   | `/api/login`                  | Obtener token                        | público      |
-| POST   | `/api/logout`                 | Revocar token                        | autenticado  |
-| GET    | `/api/debtors`                | Listar deudores                      | autenticado  |
-| POST   | `/api/debtors`                | Crear deudor                         | admin        |
-| GET    | `/api/debts`                  | Listar deudas (`?status=&debtor_id=`)| autenticado  |
-| POST   | `/api/debts`                  | Crear deuda                          | admin        |
-| GET    | `/api/debts/{id}`             | Detalle con gestiones y pagos        | autenticado  |
-| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  |
-| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  |
+| Método | Ruta                          | Descripción                          | Rol          | Estado |
+|--------|-------------------------------|--------------------------------------|--------------|--------|
+| POST   | `/api/login`                  | Obtener token                        | público      | ✅     |
+| POST   | `/api/logout`                 | Revocar token                        | autenticado  | ✅     |
+| GET    | `/api/debtors`                | Listar deudores                      | autenticado  | ✅     |
+| POST   | `/api/debtors`                | Crear deudor                         | admin        | ✅     |
+| GET    | `/api/debts`                  | Listar deudas (`?status=&debtor_id=`)| autenticado  | ✅     |
+| POST   | `/api/debts`                  | Crear deuda                          | admin        | ✅     |
+| GET    | `/api/debts/{id}`             | Detalle con gestiones y pagos        | autenticado  | ✅     |
+| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  | ⏳     |
+| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  | ⏳     |
+| GET    | `/api/me`                     | Usuario autenticado                  | autenticado  | ✅     |
+| PUT    | `/api/debtors/{id}`           | Actualizar deudor                    | admin        | ✅     |
+| DELETE | `/api/debtors/{id}`           | Eliminar deudor                      | admin        | ✅     |
+| PUT    | `/api/debts/{id}`             | Actualizar deuda                     | admin        | ✅     |
+| DELETE | `/api/debts/{id}`             | Eliminar deuda                       | admin        | ✅     |
+
 
 ### Ejemplo
 
@@ -70,13 +81,16 @@ curl -X POST http://localhost/api/login \
   -d '{"email":"gestor@example.com","password":"password"}'
 ```
 
+
+
 ## Tests
+
+> **Pendiente**: la suite de tests (Pest) y el workflow de GitHub Actions se
+> añadirán en la siguiente iteración.
 
 ```bash
 ./vendor/bin/sail artisan test
 ```
-
-Los tests se ejecutan automáticamente en cada push mediante GitHub Actions (`.github/workflows/tests.yml`).
 
 ## Modelo de datos
 
@@ -111,10 +125,11 @@ continuación:
 
 | Tarea                          | Asistente (Antigravity)               | Yo                                          |
 |--------------------------------|----------------------------------------|---------------------------------------------|
-| Diseño del modelo de datos     | Propuestas de alternativas             | Decisión final y revisión de relaciones     |
-| Tests                          | Generación de casos base               | Revisión, casos límite y ajustes            |
-| Refactorización                | Extracción de lógica a servicios       | Validación de que el comportamiento no cambia |
-| Debugging                      | Análisis de trazas y errores           | Verificación de la causa real               |
+| Setup del entorno (WSL, Docker, Sail) | Sugerencias en errores de configuración | Debugging manual y decisiones           |
+| Enums y modelos                | Apoyo en sintaxis de PHP 8             | Diseño del modelo de datos y relaciones     |
+| CRUD de la API                 | Explicaciones puntuales de sintaxis    | Estructura de controladores, validaciones, filtros |
+| Debugging                      | Análisis de errores del framework      | Verificación y ajuste de la solución        |
+| Debugging de Eloquent          | Detección del problema (`status` null tras create) | Decisión de usar `refresh()` tras crear |
 
 > Esta tabla se actualizará al finalizar el proyecto con ejemplos concretos de
 > cada tipo de tarea.
