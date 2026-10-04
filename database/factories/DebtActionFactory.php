@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\DebtAction;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\DebtActionType;
 use App\Models\Debt;
+use App\Models\DebtAction;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<DebtAction>

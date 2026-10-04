@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Debt;
 use App\Enums\DebtStatus;
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Debt;
 use App\Models\Debtor;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Debt>

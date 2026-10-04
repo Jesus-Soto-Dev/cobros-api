@@ -19,7 +19,7 @@ class DebtorFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'document' => strtoupper(fake()->unique()->numerify('########') . fake()->randomLetter()),
+            'document' => strtoupper(fake()->unique()->numerify('########').fake()->randomLetter()),
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->numerify('6########'),
         ];
