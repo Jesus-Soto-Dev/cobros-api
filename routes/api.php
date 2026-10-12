@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DebtActionController;
 use App\Http\Controllers\Api\DebtController;
 use App\Http\Controllers\Api\DebtorController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,15 +20,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/debts', [DebtController::class, 'index']);
     Route::get('/debts/{debt}', [DebtController::class, 'show']);
 
+    // Gestiones y pagos: cualquier usuario autenticado
+    Route::post('/debts/{debt}/actions', [DebtActionController::class, 'store']);
+    Route::post('/debts/{debt}/payments', [PaymentController::class, 'store']);
+
     // Escritura: solo admin
     Route::middleware('role:admin')->group(function () {
         Route::post('/debtors', [DebtorController::class, 'store']);
         Route::put('/debtors/{debtor}', [DebtorController::class, 'update']);
         Route::delete('/debtors/{debtor}', [DebtorController::class, 'destroy']);
+
         Route::post('/debts', [DebtController::class, 'store']);
         Route::put('/debts/{debt}', [DebtController::class, 'update']);
         Route::delete('/debts/{debt}', [DebtController::class, 'destroy']);
     });
-
-    Route::post('/debts/{debt}/actions', [DebtActionController::class, 'store']);
 });
