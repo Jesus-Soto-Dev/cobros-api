@@ -1,14 +1,10 @@
 # Cobros API
 
+[![Tests](https://github.com/Jesus-Soto-Dev/cobros-api/actions/workflows/tests.yml/badge.svg)](https://github.com/Jesus-Soto-Dev/cobros-api/actions/workflows/tests.yml)
+
 API REST para la gestión de deudas y recobro, construida con **Laravel 13**. Permite registrar deudores y deudas, anotar las gestiones realizadas (llamadas, emails, promesas de pago) y controlar los pagos parciales.
 
 > Proyecto personal de aprendizaje, inspirado en el flujo de trabajo de una empresa de gestión de cobros.
-
-> **Estado del proyecto**: en desarrollo activo. Actualmente están implementados
-> la autenticación con Sanctum, el CRUD de deudores y deudas (con filtros,
-> paginación y control de roles), las gestiones y pagos con transacciones, y el
-> comando de marcado de vencidas. Los tests y el CI se están implementando.
-> Última actualización: 2026-10-12.
 
 ## Stack
 
@@ -60,19 +56,18 @@ Todos salvo el login requieren la cabecera `Authorization: Bearer <token>`.
 |--------|-------------------------------|--------------------------------------|--------------|--------|
 | POST   | `/api/login`                  | Obtener token                        | público      | ✅     |
 | POST   | `/api/logout`                 | Revocar token                        | autenticado  | ✅     |
+| GET    | `/api/me`                     | Usuario autenticado                  | autenticado  | ✅     |
 | GET    | `/api/debtors`                | Listar deudores                      | autenticado  | ✅     |
 | POST   | `/api/debtors`                | Crear deudor                         | admin        | ✅     |
+| PUT    | `/api/debtors/{id}`           | Actualizar deudor                    | admin        | ✅     |
+| DELETE | `/api/debtors/{id}`           | Eliminar deudor                      | admin        | ✅     |
 | GET    | `/api/debts`                  | Listar deudas (`?status=&debtor_id=`)| autenticado  | ✅     |
 | POST   | `/api/debts`                  | Crear deuda                          | admin        | ✅     |
 | GET    | `/api/debts/{id}`             | Detalle con gestiones y pagos        | autenticado  | ✅     |
-| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  | ✅     |
-| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  | ✅     |
-| GET    | `/api/me`                     | Usuario autenticado                  | autenticado  | ✅     |
-| PUT    | `/api/debtors/{id}`           | Actualizar deudor                    | admin        | ✅     |
-| DELETE | `/api/debtors/{id}`           | Eliminar deudor                      | admin        | ✅     |
 | PUT    | `/api/debts/{id}`             | Actualizar deuda                     | admin        | ✅     |
 | DELETE | `/api/debts/{id}`             | Eliminar deuda                       | admin        | ✅     |
-
+| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  | ✅     |
+| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  | ✅     |
 
 ### Ejemplo
 
@@ -82,16 +77,13 @@ curl -X POST http://localhost/api/login \
   -d '{"email":"gestor@example.com","password":"password"}'
 ```
 
-
-
 ## Tests
-
-> **Pendiente**: la suite de tests (Pest) y el workflow de GitHub Actions se
-> añadirán en la siguiente iteración.
 
 ```bash
 ./vendor/bin/sail artisan test
 ```
+
+La suite de tests usa **Pest** y una base de datos MySQL separada. Se ejecuta automáticamente en cada push mediante GitHub Actions ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)).
 
 ## Modelo de datos
 
@@ -108,21 +100,13 @@ users ──< debt_actions >── debts >── debtors
 
 ## Uso de asistentes de IA (IA agéntica)
 
-Este proyecto se ha desarrollado apoyándome en asistentes de IA agéntica
-integrados en el editor, siguiendo el flujo de trabajo que se describe a
-continuación:
+Este proyecto se ha desarrollado apoyándome en asistentes de IA agéntica integrados en el editor, siguiendo el flujo de trabajo que se describe a continuación:
 
-- **Asistente principal**: Antigravity (IDE con agente integrado sobre Gemini),
-  conectado al proyecto en WSL2.
-- **Metodología**: yo tomo las decisiones de diseño (modelo de datos, relaciones,
-  contratos de la API, validaciones) y el asistente ejecuta tareas repetitivas o
-  acotadas (generación de tests base, factories, seeders, refactors mecánicos,
-  análisis de errores).
-- **Revisión**: reviso siempre el código generado, entiendo qué hace cada línea
-  y lo ajusto cuando no encaja con los requisitos o con las convenciones del
-  proyecto.
+- **Asistente principal**: Antigravity (IDE con agente integrado sobre Gemini), conectado al proyecto en WSL2.
+- **Metodología**: yo tomo las decisiones de diseño (modelo de datos, relaciones, contratos de la API, validaciones) y el asistente ejecuta tareas repetitivas o acotadas (generación de tests base, factories, seeders, refactors mecánicos, análisis de errores).
+- **Revisión**: reviso siempre el código generado, entiendo qué hace cada línea y lo ajusto cuando no encaja con los requisitos o con las convenciones del proyecto.
 
-### Tareas delegadas (se irá actualizando a medida que avance el proyecto)
+### Tareas delegadas
 
 | Tarea                          | Asistente (Antigravity)               | Yo                                          |
 |--------------------------------|----------------------------------------|---------------------------------------------|
@@ -131,17 +115,12 @@ continuación:
 | CRUD de la API                 | Explicaciones puntuales de sintaxis    | Estructura de controladores, validaciones, filtros |
 | Debugging                      | Análisis de errores del framework      | Verificación y ajuste de la solución        |
 | Debugging de Eloquent          | Detección del problema (`status` null tras create) | Decisión de usar `refresh()` tras crear |
-| Reglas de negocio (pagos)      | Discusión de alternativas               | Implementación de `DB::transaction` + `lockForUpdate` |
-
-> Esta tabla se actualizará al finalizar el proyecto con ejemplos concretos de
-> cada tipo de tarea.
+| Reglas de negocio (pagos)      | Discusión de alternativas              | Implementación de `DB::transaction` + `lockForUpdate` |
+| Tests y CI                     | Generación de estructura base          | Ajuste de casos y verificación en GitHub Actions |
 
 ### Notas sobre el entorno
 
-Durante el montaje del entorno se resolvieron problemas típicos de Windows:
-integración de Docker Desktop con WSL2, conflictos de puertos con MySQL del
-sistema anfitrión y adaptación del flujo de Laravel Sail para que funcione
-dentro del sistema de archivos de WSL.
+Durante el montaje del entorno se resolvieron problemas típicos de Windows: integración de Docker Desktop con WSL2, conflictos de puertos con MySQL del sistema anfitrión y adaptación del flujo de Laravel Sail para que funcione dentro del sistema de archivos de WSL.
 
 ## Posibles mejoras
 
@@ -149,6 +128,7 @@ dentro del sistema de archivos de WSL.
 - Exportación de informes a CSV.
 - Notificaciones por email al registrar una promesa de pago.
 - Paginación y búsqueda avanzada.
+- Documentación OpenAPI / Swagger.
 
 ## Licencia
 
