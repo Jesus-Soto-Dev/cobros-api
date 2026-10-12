@@ -5,9 +5,10 @@ API REST para la gestión de deudas y recobro, construida con **Laravel 13**. Pe
 > Proyecto personal de aprendizaje, inspirado en el flujo de trabajo de una empresa de gestión de cobros.
 
 > **Estado del proyecto**: en desarrollo activo. Actualmente están implementados
-> la autenticación con Sanctum y el CRUD de deudores y deudas (con filtros,
-> paginación y control de roles). Los endpoints de gestiones y pagos, los tests
-> y el CI se están implementando. Última actualización: 2026-10-04.
+> la autenticación con Sanctum, el CRUD de deudores y deudas (con filtros,
+> paginación y control de roles), las gestiones y pagos con transacciones, y el
+> comando de marcado de vencidas. Los tests y el CI se están implementando.
+> Última actualización: 2026-10-12.
 
 ## Stack
 
@@ -64,8 +65,8 @@ Todos salvo el login requieren la cabecera `Authorization: Bearer <token>`.
 | GET    | `/api/debts`                  | Listar deudas (`?status=&debtor_id=`)| autenticado  | ✅     |
 | POST   | `/api/debts`                  | Crear deuda                          | admin        | ✅     |
 | GET    | `/api/debts/{id}`             | Detalle con gestiones y pagos        | autenticado  | ✅     |
-| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  | ⏳     |
-| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  | ⏳     |
+| POST   | `/api/debts/{id}/actions`     | Registrar gestión                    | autenticado  | ✅     |
+| POST   | `/api/debts/{id}/payments`    | Registrar pago                       | autenticado  | ✅     |
 | GET    | `/api/me`                     | Usuario autenticado                  | autenticado  | ✅     |
 | PUT    | `/api/debtors/{id}`           | Actualizar deudor                    | admin        | ✅     |
 | DELETE | `/api/debtors/{id}`           | Eliminar deudor                      | admin        | ✅     |
@@ -130,6 +131,7 @@ continuación:
 | CRUD de la API                 | Explicaciones puntuales de sintaxis    | Estructura de controladores, validaciones, filtros |
 | Debugging                      | Análisis de errores del framework      | Verificación y ajuste de la solución        |
 | Debugging de Eloquent          | Detección del problema (`status` null tras create) | Decisión de usar `refresh()` tras crear |
+| Reglas de negocio (pagos)      | Discusión de alternativas               | Implementación de `DB::transaction` + `lockForUpdate` |
 
 > Esta tabla se actualizará al finalizar el proyecto con ejemplos concretos de
 > cada tipo de tarea.
