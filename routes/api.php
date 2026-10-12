@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DebtActionController;
 use App\Http\Controllers\Api\DebtController;
 use App\Http\Controllers\Api\DebtorController;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/debts/{debt}', [DebtController::class, 'update']);
         Route::delete('/debts/{debt}', [DebtController::class, 'destroy']);
     });
+
+    Route::post('/debts/{debt}/actions', [DebtActionController::class, 'store']);
 });
